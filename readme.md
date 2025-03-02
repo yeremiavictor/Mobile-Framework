@@ -43,3 +43,46 @@
     }
 
 <h1> Membuat Resources untuk API </h1>
+1. php artisan make:resource PostRes
+2. tambahkan  pada app>Http>Resources>PostRes.php
+
+    //mendefinisikan properti
+    public $status;
+    public $message;
+    public $resource;
+
+    /**
+     * __construct
+     *
+     * @param mixed $status
+     * @param mixed $message
+     * @param mixed $resource
+     * @return void
+     */
+
+    public function __construct($status,$message,$resource)
+    {
+        parent::__construct($resource);
+        $this->status = $status;
+        $this->message = $message;
+    }
+
+    /**
+     * toArray
+     *
+     * @param mixed $request
+     * @return array
+     */
+    public function toArray(Request $request): array
+    {
+        return[
+            'success' =>$this->status,
+            'message' =>$this->message,
+            'data' =>$this->resource
+        ];
+    }
+
+<h1> Menampilkan data dari db <h1>
+<h1> membuat controller: untuk method post </h1>
+1. php artisan make:controller Api/PostController
+    pada app>http>controllers>Api>PostController
