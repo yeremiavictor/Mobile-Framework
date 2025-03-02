@@ -2,3 +2,4 @@
 2. cd api-namaproject
 3. php artisan serve
 4. php artisan storage:link
+   5
