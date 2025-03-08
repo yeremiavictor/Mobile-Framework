@@ -134,6 +134,32 @@ class PostController extends Controller
         return new PostRes(true, 'Data Post berhasil diperbarui', $post);
     }
 
+    /**
+     * destroy
+     *
+     * @param  mixed $id
+     * @return void
+     */
+    public function destroy($id)
+    {
+
+        //find post by ID
+        $post = Post::find($id);
+
+        // Cek jika post tidak ditemukan
+        if (!$post) {
+            return response()->json(['message' => 'Post not found'], 404);
+        }
+
+        //delete image
+        Storage::delete('public/posts/'.basename($post->foto));
+
+        //delete post
+        $post->delete();
+
+        //return response
+        return new PostRes(true, 'Data Post Berhasil Dihapus!', null);
+    }
 
 
 }
