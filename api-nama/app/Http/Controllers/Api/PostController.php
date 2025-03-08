@@ -16,6 +16,8 @@ use Illuminate\Http\Request;
 //import facade validator
 use Illuminate\Support\Facades\Validator;
 
+//edit
+use Illuminate\Support\Facades\Storage;
 
 class PostController extends Controller
 {
@@ -71,4 +73,67 @@ class PostController extends Controller
         //mengembalikan respon
         return new PostRes(true, 'Data Post ditambahkan', $post);
     }
+
+    //Update
+
+    /**
+     * Update a post.
+     *
+     * @param mixed $request
+     * @param mixed $id
+     * @return void
+     */
+    public function update(Request $request, $id)
+    {
+        // Define validation rules
+        $validator = Validator::make($request->all(), [
+            'judul' => 'required',
+            'keterangan' => 'required'
+        ]);
+
+        // Cek jika validasi gagal
+        if($validator->fails()){
+            return response()->json($validator->errors(), 442);
+        }
+
+        // Cari post by ID
+        $post = Post::find($id);
+
+        // Cek jika post tidak ditemukan
+        if (!$post) {
+            return response()->json(['message' => 'Post not found'], 404);
+        }
+
+        // Cek jika ada file foto baru
+        if($request->hasFile('foto')) {
+
+            // Upload image
+            $foto = $request->file('foto');
+            $foto->storeAs('public/posts', $foto->hashName());
+
+            // Delete old image if exists
+            if ($post->foto) {
+                Storage::delete('public/posts/' . basename($post->foto));
+            }
+
+            // Update post dengan gambar baru
+            $post->update([
+                'foto'          => $foto->hashName(),
+                'judul'         => $request->judul,
+                'keterangan'    => $request->keterangan,
+            ]);
+        } else {
+            // Update post tanpa mengubah gambar
+            $post->update([
+                'judul'         => $request->judul,
+                'keterangan'    => $request->keterangan
+            ]);
+        }
+
+        // Mengembalikan respons setelah berhasil update
+        return new PostRes(true, 'Data Post berhasil diperbarui', $post);
+    }
+
+
+
 }
