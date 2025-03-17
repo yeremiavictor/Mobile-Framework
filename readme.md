@@ -167,35 +167,6 @@
 
 ---
 
-## Read Data (By ID)
-
-1. Tambahkan method `store` di `PostController`:
-
-   ```php
-      public function show($id)
-        {
-            // Cari post berdasarkan ID
-            $post = Post::find($id);
-
-            // Jika post tidak ditemukan, kembalikan respons error
-            if (!$post) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Post not found'
-                ], 404);
-            }
-
-            // Jika ditemukan, kembalikan data post sebagai resource
-            return new PostRes(true, 'Detail Data Post', $post);
-        }
-   ```
-
-2. Uji API dengan Postman:
-   - **Method:** `GET`
-   - **URL:** `http://localhost:8000/api/posts/1`
-
----
-
 ## Create Data (POST)
 
 1. Tambahkan import di `PostController.php`:
@@ -248,3 +219,111 @@
      judul       (text) - judul gambar
      keterangan  (text) - deskripsi gambar
      ```
+
+---
+
+## Read Data (By ID)
+
+1. Tambahkan method `show` di `PostController`:
+
+   ```php
+      public function show($id)
+        {
+            // Cari post berdasarkan ID
+            $post = Post::find($id);
+
+            // Jika post tidak ditemukan, kembalikan respons error
+            if (!$post) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Post not found'
+                ], 404);
+            }
+
+            // Jika ditemukan, kembalikan data post sebagai resource
+            return new PostRes(true, 'Detail Data Post', $post);
+        }
+   ```
+
+2. Uji API dengan Postman:
+   - **Method:** `GET`
+   - **URL:** `http://localhost:8000/api/posts/1`
+
+---
+
+## UPDATE Data (POST)
+
+1. Tambahkan import di `PostController.php`:
+   ```php
+   use Illuminate\Support\Facades\Storage;
+   ```
+2. Tambahkan method `store` di `PostController`:
+
+   ```php
+    public function update(Request $request, $id)
+    {
+        // Define validation rules
+        $validator = Validator::make($request->all(), [
+            'judul' => 'required',
+            'keterangan' => 'required'
+        ]);
+
+        // Cek jika validasi gagal
+        if($validator->fails()){
+            return response()->json($validator->errors(), 442);
+        }
+
+        // Cari post by ID
+        $post = Post::find($id);
+
+        // Cek jika post tidak ditemukan
+        if (!$post) {
+            return response()->json(['message' => 'Post not found'], 404);
+        }
+
+        // Cek jika ada file foto baru
+        if($request->hasFile('foto')) {
+
+            // Upload image
+            $foto = $request->file('foto');
+            $foto->storeAs('public/posts', $foto->hashName());
+
+            // Delete old image if exists
+            if ($post->foto) {
+                Storage::delete('public/posts/' . basename($post->foto));
+            }
+
+            // Update post dengan gambar baru
+            $post->update([
+                'foto'          => $foto->hashName(),
+                'judul'         => $request->judul,
+                'keterangan'    => $request->keterangan,
+            ]);
+        } else {
+            // Update post tanpa mengubah gambar
+            $post->update([
+                'judul'         => $request->judul,
+                'keterangan'    => $request->keterangan
+            ]);
+        }
+
+        // Mengembalikan respons setelah berhasil update
+        return new PostRes(true, 'Data Post berhasil diperbarui', $post);
+    }
+   ```
+
+3. Uji API dengan Postman:
+   - **Method:** `POST`
+   - **URL:** `http://localhost:8000/api/posts`
+   - **Headers:**
+     ```
+     Content-Type: multipart/x-www-form-urlencoded
+     ```
+   - **Body (Form-Data):**
+     ```
+     foto        (file) - upload gambar
+     judul       (text) - judul gambar
+     keterangan  (text) - deskripsi gambar
+     ```
+
+---
