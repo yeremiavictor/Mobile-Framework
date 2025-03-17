@@ -74,6 +74,29 @@ class PostController extends Controller
         return new PostRes(true, 'Data Post ditambahkan', $post);
     }
 
+    /**
+     * Show a single post by ID.
+     *
+     * @param  mixed $id
+     * @return void
+     */
+    public function show($id)
+    {
+        // Cari post berdasarkan ID
+        $post = Post::find($id);
+
+        // Jika post tidak ditemukan, kembalikan respons error
+        if (!$post) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Post not found'
+            ], 404);
+        }
+
+        // Jika ditemukan, kembalikan data post sebagai resource
+        return new PostRes(true, 'Detail Data Post', $post);
+    }
+
     //Update
 
     /**
