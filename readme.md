@@ -167,6 +167,35 @@
 
 ---
 
+## Read Data (By ID)
+
+1. Tambahkan method `store` di `PostController`:
+
+   ```php
+      public function show($id)
+        {
+            // Cari post berdasarkan ID
+            $post = Post::find($id);
+
+            // Jika post tidak ditemukan, kembalikan respons error
+            if (!$post) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Post not found'
+                ], 404);
+            }
+
+            // Jika ditemukan, kembalikan data post sebagai resource
+            return new PostRes(true, 'Detail Data Post', $post);
+        }
+   ```
+
+2. Uji API dengan Postman:
+   - **Method:** `GET`
+   - **URL:** `http://localhost:8000/api/posts/1`
+
+---
+
 ## Create Data (POST)
 
 1. Tambahkan import di `PostController.php`:
