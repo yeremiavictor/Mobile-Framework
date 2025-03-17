@@ -110,7 +110,7 @@
 
 ---
 
-## Membuat Controller API
+## Membuat Controller API & READ
 
 1. Buat controller:
    ```sh
