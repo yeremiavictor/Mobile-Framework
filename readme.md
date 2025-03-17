@@ -246,9 +246,11 @@
    ```
 
 2. Uji API dengan Postman:
+
    - **Method:** `GET`
    - **URL:** `http://localhost:8000/api/posts/{:id}`
-     {:id} bisa di isi dengan data id terdaftar (bisa di cek di read data)
+
+   {:id} bisa di isi dengan data id terdaftar (bisa di cek di read data)
 
 ---
 
@@ -258,7 +260,7 @@
    ```php
    use Illuminate\Support\Facades\Storage;
    ```
-2. Tambahkan method `store` di `PostController`:
+2. Tambahkan method `update` di `PostController`:
 
    ```php
     public function update(Request $request, $id)
@@ -314,6 +316,7 @@
    ```
 
 3. Uji API dengan Postman:
+
    - **Method:** `POST`
    - **URL:** `http://localhost:8000/api/posts/{id}`
    - **Headers:**
@@ -327,6 +330,42 @@
      keterangan  (text) - deskripsi gambar
      ```
 
-{:id} bisa di isi dengan data id terdaftar (bisa di cek di read data)
+   {:id} bisa di isi dengan data id terdaftar (bisa di cek di read data)
+
+---
+
+## Delete Data (POST)
+
+1. Tambahkan method `destroy` di `PostController`:
+
+   ```php
+        public function destroy($id)
+    {
+
+        //find post by ID
+        $post = Post::find($id);
+
+        // Cek jika post tidak ditemukan
+        if (!$post) {
+            return response()->json(['message' => 'Post not found'], 404);
+        }
+
+        //delete image
+        Storage::delete('public/posts/'.basename($post->foto));
+
+        //delete post
+        $post->delete();
+
+        //return response
+        return new PostRes(true, 'Data Post Berhasil Dihapus!', null);
+    }
+   ```
+
+2. Uji API dengan Postman:
+
+   - **Method:** `DELETE`
+   - **URL:** `http://localhost:8000/api/posts/{id}`
+
+   {:id} bisa di isi dengan data id terdaftar (bisa di cek di read data)
 
 ---
