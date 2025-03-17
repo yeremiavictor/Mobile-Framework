@@ -247,7 +247,8 @@
 
 2. Uji API dengan Postman:
    - **Method:** `GET`
-   - **URL:** `http://localhost:8000/api/posts/1`
+   - **URL:** `http://localhost:8000/api/posts/{:id}`
+     {:id} bisa di isi dengan data id terdaftar (bisa di cek di read data)
 
 ---
 
@@ -314,7 +315,7 @@
 
 3. Uji API dengan Postman:
    - **Method:** `POST`
-   - **URL:** `http://localhost:8000/api/posts`
+   - **URL:** `http://localhost:8000/api/posts/{id}`
    - **Headers:**
      ```
      Content-Type: multipart/x-www-form-urlencoded
@@ -325,5 +326,7 @@
      judul       (text) - judul gambar
      keterangan  (text) - deskripsi gambar
      ```
+
+{:id} bisa di isi dengan data id terdaftar (bisa di cek di read data)
 
 ---
