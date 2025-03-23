@@ -509,3 +509,91 @@
       ```
 
 ---
+
+## Membuat Login
+
+1. Membuat Controller untuk login:
+   php artisan make:controller Api/LoginController -i
+2. Buka Login Controller -> Import validator
+   ```php
+    use Illuminate\Support\Facades\Validator;
+   ```
+3. Dalam function invoke
+
+   ```php
+   //atur validator
+           $validator = Validator::make($request->all(),[
+               'email'     => 'required',
+               'password'  => 'required',
+           ]);
+
+           // kalau gagal validasi
+           if($validator->fails()){
+               return response()->json($validator->errors(),422);
+           }
+
+           //mendapat kredensial dari request
+           $credentials = $request->only('email','password');
+
+           //kalau autentikasi gagal
+           if(!$token = auth()->guard('api')->attempt($credentials)){
+               return response()->json([
+                   'success' => false,
+                   'message' => 'Email atau password salah',
+               ],401);
+           }
+
+           //if auth success
+           return response()->json([
+               'success' => true,
+               'user'    => auth()->guard('api')->user(),
+               'token'   => $token
+           ], 200);
+   ```
+
+4. Tambahkan Route Login
+
+   ```php
+       Route::post('/login', App\Http\Controllers\Api\LoginController::class)->name('login');
+
+       Route::middleware('auth:api')->get('/user', function (Request $request) {
+           return $request->user();
+       });
+   ```
+
+5. UJI API DENGAN POSTMAN
+
+   - **Method:** `POST`
+
+     - **URL:** `http://localhost:8000/api/login`
+     - **Headers:**
+
+     ```
+     Content-Type: multipart/x-www-form-urlencoded
+     ```
+
+     - **Body (Form-Data):**
+
+     ```
+     email                 (text) - alamat email (akan digunakan sebagai username)
+     password              (text) - password
+     ```
+
+   - **Method:** `GET`
+
+   - **URL:** `http://localhost:8000/api/user`
+   - **Headers:**
+
+   ```
+   Content-Type: multipart/x-www-form-urlencoded
+   ```
+
+   - **Headers**
+
+   ```
+   Accept           - application/json
+   Content-Type     - application/json
+   Authorization    - Bearer <spasi> TOKEN yang digenerate
+   ```
+
+   ***

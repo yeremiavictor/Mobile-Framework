@@ -15,3 +15,11 @@ Route::apiResource('/posts', App\Http\Controllers\Api\PostController::class );
 
 //register
 Route::post('/register', App\Http\Controllers\Api\RegisterController::class)->name('register');
+
+//login
+Route::post('/login', App\Http\Controllers\Api\LoginController::class)->name('login');
+
+Route::middleware('auth:api')->get('/user', function (Request $request) {
+    return $request->user();
+});
+
