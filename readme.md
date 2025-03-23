@@ -435,4 +435,77 @@
         }
     ```
 
-6.  Membuat Controller Register
+---
+
+## Membuat Registrasi USER (JWT)
+
+1.  Membuat Controller Register
+    php artisan make:controller Api/RegisterController -i
+
+2.  Buka file RegisterController -> import validator dan model user dulu
+
+    ```php
+        use App\Models\User;
+        use Illuminate\Support\Facades\Validator;
+    ```
+
+3.  pada action invoke tambahkan rule berikut:
+
+    ```php
+    // atur validasi
+        $validator = Validator::make($request->all(), [
+            'name'      =>'required',
+            'email'     =>'required|email|unique:users',
+            'password'  =>'required|min:8|confirmed',
+        ]);
+
+        //kalau validasi gagal
+        if($validator->fails()){
+            return response()->json($validator->errors(),422);
+        }
+
+        //create users
+        $user=User::create([
+            'name'      =>$request->name,
+            'email'     =>$request->email,
+            'password'  =>bcrypt($request->password)
+        ]);
+
+        //berikan respon json user dibuat
+        if($user){
+            return response()->json([
+                'sucess'    => true,
+                'user'      => $user,
+            ],201);
+        }
+
+        //berikan respon json user gagal dibuat
+        return response()->json([
+            'sucess'    => false,
+        ],409);
+
+    ```
+
+4.  tambahkan controller dalam routes (routes/api.php)
+
+    ```php
+        Route::post('/register', App\Http\Controllers\Api\RegisterController::class)->name('register');
+    ```
+
+5.  Uji API dengan Postman:
+
+    - **Method:** `POST`
+    - **URL:** `http://localhost:8000/api/register`
+    - **Headers:**
+      ```
+      Content-Type: multipart/x-www-form-urlencoded
+      ```
+    - **Body (Form-Data):**
+      ```
+      name                  (text) - Nama Asli
+      email                 (text) - alamat email (akan digunakan sebagai username)
+      password              (text) - password
+      password_confirmation (text) - konfirmasi password
+      ```
+
+---

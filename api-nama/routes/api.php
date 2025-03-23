@@ -12,3 +12,6 @@ Route::get('/user', function (Request $request) {
 
 //posts
 Route::apiResource('/posts', App\Http\Controllers\Api\PostController::class );
+
+//register
+Route::post('/register', App\Http\Controllers\Api\RegisterController::class)->name('register');
