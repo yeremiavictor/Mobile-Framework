@@ -597,3 +597,85 @@
    ```
 
    ***
+
+---
+
+## Membuat Logout
+
+1. ubah .env (untuk aktifkan blacklist bila sudah logout)
+
+```env
+    JWT_SHOW_BLACKLIST_EXCEPTION=true
+```
+
+2. Buat controller Logout:
+   php artisan make:controller Api/LogoutController -i
+
+3. Buka LogoutController -> import:
+   ```php
+    use Tymon\JWTAuth\Facades\JWTAuth;
+    use Tymon\JWTAuth\Exceptions\JWTException;
+    use Tymon\JWTAuth\Exceptions\TokenExpiredException;
+    use Tymon\JWTAuth\Exceptions\TokenInvalidException;
+   ```
+4. Dalam function invoke tambahkan:
+
+   ```php
+   $removeToken = JWTAuth::invalidate(JWTAuth::getToken());
+
+   if($removeToken) {
+       //return response JSON
+       return response()->json([
+           'success' => true,
+           'message' => 'Logout Berhasil!',
+       ]);
+   }
+   ```
+
+5. pada routes tambahkan:
+   ```php
+       Route::post('/logout', App\Http\Controllers\Api\LogoutController::class)->name('logout');
+   ```
+6. UJI API DENGAN POSTMAN
+
+   - **Method:** `POST`
+
+     - **URL:** `http://localhost:8000/api/logout`
+
+   - **Headers:**
+
+   ```
+   Content-Type: multipart/x-www-form-urlencoded
+   ```
+
+   - **Headers**
+
+   ```
+   Accept           - application/json
+   Content-Type     - application/json
+   Authorization    - Bearer <spasi> TOKEN yang digenerate
+   ```
+
+   ***
+
+---
+
+### LAST
+
+Sekarang bagaimana bila crud sebelumnya hanya bisa diakses apabila telah login?
+
+1. pada route, sebelumnya silahkan comment / delete posts dan route->get user
+2. Update code Anda:
+
+   ```php
+       // Update agar CRUD hanya bisa setelah login
+       Route::middleware('auth:api')->group(function () {
+           // Post CRUD (hanya untuk user yang sudah login)
+           Route::apiResource('/posts', App\Http\Controllers\Api\PostController::class);
+
+           // Get user info
+           Route::get('/user', function (Request $request) {
+               return response()->json($request->user());
+           });
+       });
+   ```
