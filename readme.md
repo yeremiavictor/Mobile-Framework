@@ -369,3 +369,70 @@
    {:id} bisa di isi dengan data id terdaftar (bisa di cek di read data)
 
 ---
+
+## Instalasi AUTH
+
+1.  composer require tymon/jwt-auth
+2.  Publish konfigurasi:
+    php artisan vendor:publish --provider="Tymon\JWTAuth\Providers\LaravelServiceProvider"
+3.  bangun secret key: -> hasil akan di show di .env
+    php artisan jwt:secret
+4.  Pada config/auth.php
+    ubah line
+
+        ```php
+            'guards' => [
+                'web' => [
+                    'driver' => 'session',
+                    'provider' => 'users',
+                ],
+            ],
+
+        ```
+
+    menjadi:
+
+        ```php
+            'guards' => [
+                'web' => [
+                    'driver' => 'session',
+                    'provider' => 'users',
+                ],
+                'api' => [
+                    'driver' => 'jwt',
+                    'provider'  => 'users',
+                ],
+            ],
+
+        ```
+
+5.  Pada app/Models/User.php
+    import jwt:
+
+    ```php
+        use Tymon\JWTAuth\Contracts\JWTSubject;
+    ```
+
+    tambahkan implementasi jwt pada class:
+
+    ```php
+        class User extends Authenticatable implements JWTSubject
+    ```
+
+    tambahkan function untuk mendapatkan key dan mengembalikan key:
+
+    ```php
+        //mengambil identifier yang akan di klaim di jwt
+        public function getJWTIdentifier()
+            {
+                return $this->getKey();
+            }
+
+        //mengembalikan nilai dalam bentuk array
+        public function getJWTCustomClaims()
+        {
+            return [];
+        }
+    ```
+
+6.  Membuat Controller Register
