@@ -18,6 +18,10 @@
    ```sh
    php artisan storage:link
    ```
+5. Untuk teman teman yang migrasi project antar komputer, silahkan jalankan
+   ```sh
+   composer update
+   ```
 
 ---
 
@@ -139,7 +143,11 @@
 
 ## Membuat Routing API
 
-1. Tambahkan route di `routes/api.php`:
+1. Jalankan untuk install api di laravel:
+   ```sh
+       php artisan install:api
+   ```
+2. Tambahkan route di `routes/api.php`:
 
    ```php
    use Illuminate\Http\Request;
@@ -153,17 +161,19 @@
    Route::apiResource('/posts', PostController::class);
    ```
 
-2. Periksa route API:
+3. Periksa route API:
    ```sh
    php artisan route:list
    ```
-3. Uji API dengan Postman:
+4. Uji API dengan Postman:
    - **Method:** `GET`
    - **URL:** `http://localhost:8000/api/posts`
    - **Pastikan server berjalan dengan**:
      ```sh
      php artisan serve
      ```
+5. Notes Hanya kalau terjadi error dengan API setelah migrasi project:
+   hapus file api.php dalam folder routes kemudian jalankan reinstall routes dengan step No 1 Membuat Routing API
 
 ---
 
